@@ -27,6 +27,7 @@ public class SpeedSensor {
 
         long nowTime = System.currentTimeMillis();
 
+        //Если прошло более 10 минут, то мы обнуляем значения для расчета среднего значения за последние 10 минут
         if (nowTime - beginDate > TEN_MINUTES_MILLISECONDS){
             circleCounter = 0;
             averageSpeed = 0;
@@ -44,7 +45,7 @@ public class SpeedSensor {
 
         prevTime = nowTime;
 
-        //переводим в км/ч
+        //Расчитываем скорость и переводим в км/ч
         currentSpeed = (spanTime != 0) ? circumference/spanTime*1000*3.6 : 0;
         averageSpeed += currentSpeed;
 
