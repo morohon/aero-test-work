@@ -15,12 +15,11 @@ public class SpeedSensor {
     private double averageSpeed;
 
     /**
-     * @param circumference
-     *        Длина окружности колеса указывается в метрах
-     *        для примера брал колесо с длинной окружности 0.8636 м .
+     * @param diameter
+     *        Диаметр колеса в метрах
      */
-    public SpeedSensor(float circumference) {
-        this.circumference = circumference;
+    public SpeedSensor(float diameter){
+        this.circumference = (float)Math.PI * diameter;
         beginDate = System.currentTimeMillis();
     }
 
