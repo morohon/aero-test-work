@@ -1,5 +1,7 @@
 package ru.aero.test.verevkin;
 
+import java.util.*;
+
 /**
  * @author Kirill Verevkin
  */
@@ -8,11 +10,9 @@ public class SpeedSensor {
 
     private static final long TEN_MINUTES_MILLISECONDS = 600000;
     private final float circumference;
-    private long beginDate;
-    private long circleCounter;
     private long prevTime;
     private double currentSpeed;
-    private double averageSpeed;
+    private final Set<SpeedMeasure> speedData;
 
     /**
      * @param diameter
@@ -20,19 +20,12 @@ public class SpeedSensor {
      */
     public SpeedSensor(float diameter){
         this.circumference = (float)Math.PI * diameter;
-        beginDate = System.currentTimeMillis();
+        speedData = new HashSet<>();
     }
 
     public void circle() {
 
         long nowTime = System.currentTimeMillis();
-
-        //Если прошло более 10 минут, то мы обнуляем значения для расчета среднего значения за последние 10 минут
-        if (nowTime - beginDate > TEN_MINUTES_MILLISECONDS){
-            circleCounter = 0;
-            averageSpeed = 0;
-            beginDate = nowTime;
-        }
 
         //Для расчета скорости нам нужно знать время, за которое был выполнен полный оборот
         //т.к. датчик только один необходимо опираться на данные одного оборота
@@ -45,13 +38,13 @@ public class SpeedSensor {
 
         prevTime = nowTime;
 
-        //Расчитываем скорость и переводим в км/ч
+        //Рассчитываем скорость и переводим в км/ч
         currentSpeed = (spanTime != 0) ? circumference/spanTime*1000*3.6 : 0;
-        averageSpeed += currentSpeed;
+        speedData.add(new SpeedMeasure(currentSpeed, nowTime));
+    }
 
-        //Сохраняем количество оборотов для расчета среднего за 10 минут
-        circleCounter++;
-
+    private void deleteOldSpeedMeasure(long nowTime) {
+        speedData.removeIf(sm -> nowTime - sm.timestamp > TEN_MINUTES_MILLISECONDS);
     }
 
     public double getCurrentSpeed() {
@@ -59,6 +52,17 @@ public class SpeedSensor {
     }
 
     public double getAverageSpeed() {
-        return (averageSpeed == 0) ? averageSpeed : averageSpeed/circleCounter;
+        deleteOldSpeedMeasure(System.currentTimeMillis());
+        return (speedData.size() == 0) ? 0 : speedData.stream().mapToDouble(sm -> sm.speed).sum() / speedData.size();
+    }
+
+    static class SpeedMeasure {
+        private final double speed;
+        private final long timestamp;
+
+        public SpeedMeasure(double speed, long timestamp) {
+            this.speed = speed;
+            this.timestamp = timestamp;
+        }
     }
 }
