@@ -41,7 +41,6 @@ public class SpeedSensor {
         //Расчитываем скорость и переводим в км/ч
         currentSpeed = (spanTime != 0) ? circumference/spanTime*1000*3.6 : 0;
         speedData.add(new SpeedMeasure(currentSpeed, nowTime));
-        deleteOldSpeedMeasure(nowTime);
     }
 
     private void deleteOldSpeedMeasure(long nowTime) {
@@ -53,6 +52,7 @@ public class SpeedSensor {
     }
 
     public double getAverageSpeed() {
+        deleteOldSpeedMeasure(System.currentTimeMillis());
         return (speedData.size() == 0) ? 0 : speedData.stream().mapToDouble(sm -> sm.speed).sum() / speedData.size();
     }
 
