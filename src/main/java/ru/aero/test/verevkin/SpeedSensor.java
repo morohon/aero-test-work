@@ -38,7 +38,7 @@ public class SpeedSensor {
 
         prevTime = nowTime;
 
-        //Расчитываем скорость и переводим в км/ч
+        //Рассчитываем скорость и переводим в км/ч
         currentSpeed = (spanTime != 0) ? circumference/spanTime*1000*3.6 : 0;
         speedData.add(new SpeedMeasure(currentSpeed, nowTime));
     }
