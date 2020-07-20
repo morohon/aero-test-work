@@ -53,7 +53,7 @@ public class SpeedSensor {
 
     public double getAverageSpeed() {
         deleteOldSpeedMeasure(System.currentTimeMillis());
-        return (speedData.size() == 0) ? 0 : speedData.stream().mapToDouble(sm -> sm.speed).sum() / speedData.size();
+        return speedData.stream().mapToDouble(sm -> sm.speed).average().orElse(0);
     }
 
     static class SpeedMeasure {
